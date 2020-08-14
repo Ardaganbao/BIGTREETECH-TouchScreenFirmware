@@ -515,15 +515,6 @@ void parseConfigKey(u16 index)
       infoSettings.marlin_mode_showtitle = getOnOff();
     break;
 
-  case C_INDEX_MARLIN_FULLSCREEN:
-      infoSettings.marlin_mode_fullscreen = getOnOff();
-    break;
-
-  case C_INDEX_MARLIN_TYPE:
-    if (inLimit(config_int(), 0, MODE_COUNT-1))
-      infoSettings.marlin_type = config_int();
-    break;
-
   case C_INDEX_MARLIN_TITLE:
     {
       char * pchr;
@@ -535,7 +526,7 @@ void parseConfigKey(u16 index)
     }
     break;
 
-#endif // ST7920_SPI || LCD2004_simulator
+#endif //ST7920_SPI
 
   //---------------------------------------------------------Printer / Machine Settings
 

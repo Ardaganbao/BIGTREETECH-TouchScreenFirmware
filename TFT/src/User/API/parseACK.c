@@ -167,11 +167,10 @@ bool dmaL1NotEmpty(uint8_t port)
 void syncL2CacheFromL1(uint8_t port)
 {
   uint16_t i = 0;
-  while (dmaL1NotEmpty(port))
+  for (i = 0; dmaL1NotEmpty(port) && dmaL2Cache[i-1] != '\n'; i++)
   {
     dmaL2Cache[i] = dmaL1Data[port].cache[dmaL1Data[port].rIndex];
     dmaL1Data[port].rIndex = (dmaL1Data[port].rIndex + 1) % DMA_TRANS_LEN;
-    if (dmaL2Cache[i++] == '\n') break;
   }
   dmaL2Cache[i] = 0; // End character
 }
@@ -188,25 +187,13 @@ void parseACK(void)
 
     if (infoHost.connected == false) //not connected to Marlin
     {
-      // Parse error information even though not connected to printer
-      if (ack_seen(errormagic)) {
-        ackPopupInfo(errormagic);
-      }
-      if (!(ack_seen("@") && ack_seen("T:")) && !ack_seen("T0:"))  goto parse_end;  //the first response should be such as "T:25/50\n"
-      if (ack_seen(heaterID[BED])) infoSettings.bed_en = ENABLED;
-      if (ack_seen(heaterID[CHAMBER])) infoSettings.chamber_en = ENABLED;
-      uint8_t i;
-      for (i = NOZZLE0; i < MAX_HOTEND_COUNT; i++) {
-        if(!ack_seen(heaterID[i])) break;
-      }
-      infoSettings.hotend_count = i ? i : 1;
-      if (infoSettings.ext_count < infoSettings.hotend_count) infoSettings.ext_count = infoSettings.hotend_count;
-      updateNextHeatCheckTime();
-      infoHost.connected = true;
-      storeCmd("M503\n");// Query detailed printer capabilities
-      storeCmd("M92\n"); // Steps/mm of extruder is an important parameter for Smart filament runout
-                         // Avoid can't getting this parameter due to disabled M503 in Marlin
-      storeCmd("M115\n");
+      if(!ack_seen("T:") && !ack_seen("T0:"))  goto parse_end;  //the first response should be such as "T:25/50\n"
+        updateNextHeatCheckTime();
+        infoHost.connected = true;
+        storeCmd("M115\n");
+        storeCmd("M503 S0\n");
+        storeCmd("M92\n"); // Steps/mm of extruder is an important parameter for Smart filament runout
+                           // Avoid can't getting this parameter due to disabled M503 in Marlin
     }
 
     // Onboard sd Gcode command response

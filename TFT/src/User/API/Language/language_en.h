@@ -20,7 +20,8 @@
     #define EN_SHUT_DOWN              "Shut Down"
     #define EN_RGB_SETTINGS           "LED Color"
     #define EN_RGB_OFF                "LED Off"
-    #define EN_TERMINAL               "Terminal"
+    #define EN_GCODE                  "Gcode"
+    #define EN_TERMINAL             "Terminal"
     #define EN_CUSTOM                 "Custom"
     #define EN_LEVELING               "Leveling"
     #define EN_POINT_1                "Point 1"
@@ -48,7 +49,7 @@
     #define EN_BLTOUCH_DEPLOY         "Deploy"
     #define EN_BLTOUCH_STOW           "Stow"
     #define EN_BLTOUCH_REPEAT         "Repeat"
-    #define EN_Z_OFFSET               "Z Offset"
+    #define EN_Z_OFFSET             "Z Offset"
     #define EN_PROBE_OFFSET           "Probe Offset"
     #define EN_CONFIRMATION           "Are you sure?"
     #define EN_DOWN                   "Down"
@@ -87,9 +88,12 @@
     #define EN_TOUCHSCREEN_ADJUST     "TSC Adjust"
     #define EN_MORE                   "More"
     #define EN_SCREEN_INFO            "Info"
+<<<<<<< HEAD
     #define EN_STATUS                 "Info"
     #define EN_SIMULATOR_BG_COLOR     "Marlin simulator background color"
     #define EN_SIMULATOR_FONT_COLOR   "Marlin simulator font color"
+=======
+>>>>>>> master
     #define EN_WHITE                  "White"
     #define EN_BLACK                  "Black"
     #define EN_BLUE                   "Blue"

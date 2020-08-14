@@ -4,9 +4,13 @@
 
 //const GUI_RECT RecXYZ = {START_X + 1*ICON_WIDTH,        STATUS_GANTRY_YOFFSET,
 //                         4*ICON_WIDTH+3*SPACE_X+START_X,ICON_START_Y-STATUS_GANTRY_YOFFSET};
-#define X_MOVE_GCODE "G1 X%.2f\n"
-#define Y_MOVE_GCODE "G1 Y%.2f\n"
-#define Z_MOVE_GCODE "G1 Z%.2f\n"
+#define X 0
+#define Y 1
+#define Z 2
+
+#define X_MOVE_GCODE "G1 X%.1f\n"
+#define Y_MOVE_GCODE "G1 Y%.1f\n"
+#define Z_MOVE_GCODE "G1 Z%.1f\n"
 
 
 //1 title, ITEM_PER_PAGE item

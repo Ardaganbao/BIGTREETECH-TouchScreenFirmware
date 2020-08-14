@@ -166,7 +166,7 @@ void setupMachine(void)
     }
   #endif
   #ifdef AUTO_SAVE_LOAD_LEVELING_VALUE
-    if (infoMachineSettings.autoLevel == 1 && infoMachineSettings.EEPROM == 1 && infoSettings.auto_load_leveling == 1){
+    if (infoMachineSettings.autoLevel == 1 && infoMachineSettings.EEPROM == 1){
       storeCmd("M420 S1\n");
     }
   #endif
@@ -204,7 +204,117 @@ void setupMachine(void)
   mustStoreCmd("M503 S0\n");
 }
 
-float flashUsedPercentage(void)
+// Version infomation
+void menuInfo(void)
+{
+  char buf[128];
+  const GUI_POINT clocks[] = {{0 * LCD_WIDTH / 3, 0 * BYTE_HEIGHT},
+                             {1 * LCD_WIDTH / 3, 0 * BYTE_HEIGHT},
+                             {2 * LCD_WIDTH / 3, 0 * BYTE_HEIGHT},
+                             {0 * LCD_WIDTH / 3, 1 * BYTE_HEIGHT},
+                             {1 * LCD_WIDTH / 3, 1 * BYTE_HEIGHT},
+                             {2 * LCD_WIDTH / 3, 1 * BYTE_HEIGHT},};
+  const char* hardware = "Board   : BIGTREETECH_" HARDWARE_VERSION;
+  const char* firmware = "Firmware: "HARDWARE_VERSION"." STRINGIFY(SOFTWARE_VERSION) " " __DATE__;
+
+  u16 HW_X = (LCD_WIDTH - GUI_StrPixelWidth((u8 *)hardware))/2;
+  u16 FW_X = (LCD_WIDTH - GUI_StrPixelWidth((u8 *)firmware))/2;
+  u16 centerY = LCD_HEIGHT/2;
+  u16 startX = MIN(HW_X, FW_X);
+
+  GUI_Clear(infoSettings.bg_color);
+
+  my_sprintf(buf, "SYS:%dMhz", mcuClocks.rccClocks.SYSCLK_Frequency / 1000000);
+  GUI_DispString(clocks[0].x, clocks[0].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "APB1:%dMhz", mcuClocks.rccClocks.PCLK1_Frequency / 1000000);
+  GUI_DispString(clocks[1].x, clocks[1].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "P1Tim:%dMhz", mcuClocks.PCLK1_Timer_Frequency / 1000000);
+  GUI_DispString(clocks[2].x, clocks[2].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "AHB:%dMhz", mcuClocks.rccClocks.HCLK_Frequency / 1000000);
+  GUI_DispString(clocks[3].x, clocks[3].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "APB2:%dMhz", mcuClocks.rccClocks.PCLK2_Frequency / 1000000);
+  GUI_DispString(clocks[4].x, clocks[4].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "P2Tim:%dMhz", mcuClocks.PCLK2_Timer_Frequency / 1000000);
+  GUI_DispString(clocks[5].x, clocks[5].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "SYS:%dMhz", mcuClocks.rccClocks.SYSCLK_Frequency / 1000000);
+  GUI_DispString(clocks[0].x, clocks[0].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "APB1:%dMhz", mcuClocks.rccClocks.PCLK1_Frequency / 1000000);
+  GUI_DispString(clocks[1].x, clocks[1].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "P1Tim:%dMhz", mcuClocks.PCLK1_Timer_Frequency / 1000000);
+  GUI_DispString(clocks[2].x, clocks[2].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "AHB:%dMhz", mcuClocks.rccClocks.HCLK_Frequency / 1000000);
+  GUI_DispString(clocks[3].x, clocks[3].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "APB2:%dMhz", mcuClocks.rccClocks.PCLK2_Frequency / 1000000);
+  GUI_DispString(clocks[4].x, clocks[4].y, (uint8_t *)buf);
+
+  my_sprintf(buf, "P2Tim:%dMhz", mcuClocks.PCLK2_Timer_Frequency / 1000000);
+  GUI_DispString(clocks[5].x, clocks[5].y, (uint8_t *)buf);
+                             
+  GUI_DispString(startX, centerY - BYTE_HEIGHT, (u8 *)hardware);
+  GUI_DispString(startX, centerY, (u8 *)firmware);
+  GUI_DispStringInRect(20, LCD_HEIGHT - (BYTE_HEIGHT*2), LCD_WIDTH-20, LCD_HEIGHT, textSelect(LABEL_TOUCH_TO_EXIT));
+
+  while(!isPress()) loopProcess();
+  while(isPress())  loopProcess();
+
+  infoMenu.cur--;
+}
+
+// Set uart pins to input, free uart
+void menuDisconnect(void)
+{
+  GUI_Clear(infoSettings.bg_color);
+  GUI_DispStringInRect(20, 0, LCD_WIDTH-20, LCD_HEIGHT, textSelect(LABEL_DISCONNECT_INFO));
+  GUI_DispStringInRect(20, LCD_HEIGHT - (BYTE_HEIGHT*2), LCD_WIDTH-20, LCD_HEIGHT, textSelect(LABEL_TOUCH_TO_EXIT));
+
+  Serial_ReSourceDeInit();
+  while(!isPress());
+  while(isPress());
+  Serial_ReSourceInit();
+
+  infoMenu.cur--;
+}
+
+MENUITEMS settingsItems = {
+// title
+LABEL_SETTINGS,
+// icon                       label
+ {{ICON_SCREEN_SETTINGS,      LABEL_SCREEN_SETTINGS},
+  {ICON_MACHINE_SETTINGS,     LABEL_MACHINE_SETTINGS},
+  {ICON_FEATURE_SETTINGS,     LABEL_FEATURE_SETTINGS},
+  {ICON_SCREEN_INFO,          LABEL_SCREEN_INFO},
+  {ICON_DISCONNECT,           LABEL_DISCONNECT},
+  {ICON_BAUD_RATE,            LABEL_BACKGROUND},
+  {ICON_BACKGROUND,           LABEL_BACKGROUND},
+  {ICON_BACK,                 LABEL_BACK},}
+};
+
+const ITEM itemBaudrate[ITEM_BAUDRATE_NUM] = {
+// icon                       label
+  {ICON_BAUD_RATE,             {.address = "2400"}},
+  {ICON_BAUD_RATE,             {.address = "9600"}},
+  {ICON_BAUD_RATE,             {.address = "19200"}},
+  {ICON_BAUD_RATE,             {.address = "38400"}},
+  {ICON_BAUD_RATE,             {.address = "57600"}},
+  {ICON_BAUD_RATE,             {.address = "115200"}},
+  {ICON_BAUD_RATE,             {.address = "250000"}},
+  {ICON_BAUD_RATE,             {.address = "500000"}},
+  {ICON_BAUD_RATE,             {.address = "1000000"}},
+};
+const  u32 item_baudrate[ITEM_BAUDRATE_NUM] = {2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000};
+static u8  item_baudrate_i = 0;
+
+void menuSettings(void)
 {
   uint32_t total = W25Qxx_ReadCapacity();
   float percent = ((float)FLASH_USED * 100) / total;

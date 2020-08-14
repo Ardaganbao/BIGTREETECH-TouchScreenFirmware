@@ -87,9 +87,6 @@
     #define RU_TOUCHSCREEN_ADJUST     "Калибровка"
     #define RU_MORE                   "Больше\u089C"  //Curved Right Arrow
     #define RU_SCREEN_INFO            "Инфо"
-    #define RU_STATUS                 "Статус"
-    #define RU_SIMULATOR_BG_COLOR     "Задний фон Marlin режима"
-    #define RU_SIMULATOR_FONT_COLOR   "Передний фон Marlin режима"
     #define RU_WHITE                  "Белый"
     #define RU_BLACK                  "Чёрный"
     #define RU_BLUE                   "Синий"

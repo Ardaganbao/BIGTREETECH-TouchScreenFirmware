@@ -212,10 +212,8 @@ float getAxisLocation(u8 n){
 
 void statusScreen_setMsg(const uint8_t *title, const uint8_t *msg)
 {
-  strncpy(msgtitle, (char *)title, sizeof(msgtitle));
-  strncpy(msgbody, (char *)msg, sizeof(msgbody));
-  msgNeedRefresh = true;
-}
+  memcpy(msgtitle, (char *)title, sizeof(msgtitle));
+  memcpy(msgbody, (char *)msg, sizeof(msgbody));
 
 void statusScreen_setReady(void)
 {
@@ -304,7 +302,12 @@ void menuStatus(void)
   while (infoMenu.menu[infoMenu.cur] == menuStatus)
   {
     if(infoHost.connected != lastConnection_status){
-      statusScreen_setReady();
+      if(infoHost.connected == false){
+        statusScreen_setMsg(textSelect(LABEL_SCREEN_INFO), textSelect(LABEL_UNCONNECTED));
+      }
+      else{
+        statusScreen_setMsg(textSelect(LABEL_SCREEN_INFO), textSelect(LABEL_READY));
+      }
       lastConnection_status = infoHost.connected;
     }
     if (msgNeedRefresh) {

@@ -377,7 +377,8 @@ void menuScreenSettings(void)
         break;
 
       case KEY_ICON_2:
-        infoMenu.menu[++infoMenu.cur] = menuLanguage;
+        infoSettings.language = (infoSettings.language + 1) % LANGUAGE_NUM;
+        menuDrawPage(&screenSettingsItems);
         break;
 
       #ifdef BUZZER_PIN
